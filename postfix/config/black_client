@@ -1,0 +1,3 @@
+# Value                 # Command       # Message during reject
+# Drop all emails from mail.ru mailboxes
+# /^.*\@mail\.com$/      REJECT          Your e-mail was banned!
