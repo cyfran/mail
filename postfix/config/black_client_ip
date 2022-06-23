@@ -1,0 +1,9 @@
+# Value                 # Command       # Message during reject
+# Ban IP (in this example 123.45.67.89)
+# /123\.45\.67\.89/     REJECT          Your IP was banned!
+# Ban subnet (in this example, 123.45.0-255.0-255)
+# /123\.45/             REJECT          Your IP-range was banned!
+# Ban domain (in this example xyz.tld)
+# /xyz\.ua/             REJECT          Your Domain was banned!
+# Ban domain (in this example cc.zxc.tld)
+# cc\.zxc\.ua/          REJECT          Your Domain was banned!
