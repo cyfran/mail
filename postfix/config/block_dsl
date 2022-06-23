@@ -1,0 +1,23 @@
+/^dsl.*\..*/i                   553 AUTO_DSL We aren't accept direct connection not from dedicated SMTP servers. Please use your internet provider SMTP Server.
+/.*\.dsl\..*/i                  553 AUTO_DSL2 We aren't accept direct connection not from dedicated SMTP servers. Please use your internet provider SMTP Server.
+/[a|x]dsl.*\..*\..*/i           553 AUTO_[A|X]DSL We aren't accept direct connection not from dedicated SMTP servers. Please use your internet provider SMTP Server.
+/client.*\..*\..*/i             553 AUTO_CLIENT We aren't accept direct connection not from dedicated SMTP servers. Please use your internet provider SMTP Server.
+/cable.*\..*\..*/i              553 AUTO_CABLE We aren't accept direct connection not from dedicated SMTP servers. Please use your internet provider SMTP Server.
+/pool\..*/i                     553 AUTO_POOL We aren't accept direct connection not from dedicated SMTP servers. Please use your internet provider SMTP Server.
+/.*dial(\.|-).*\..*\..*/i       553 AUTO_DIAL We aren't accept direct connection not from dedicated SMTP servers. Please use your internet provider SMTP Server.
+/ppp.*\..*/i                    553 AUTO_PPP We aren't accept direct connection not from dedicated SMTP servers. Please use your internet provider SMTP Server.
+/dslam.*\..*\..*/i              553 AUTO_DSLAM We aren't accept direct connection not from dedicated SMTP servers. Please use your internet provider SMTP Server.
+/dslb.*\..*\..*/i               553 AUTO_DSLB We aren't accept direct connection not from dedicated SMTP servers. Please use your internet provider SMTP Server.
+/node.*\..*\..*/i               553 AUTO_NODE We aren't accept direct connection not from dedicated SMTP servers. Please use your internet provider SMTP Server.
+/.*\.dynamicIP\..*/i            553 AUTO_DYNAMIC We aren't accept direct connection not from dedicated SMTP servers. Please use your internet provider SMTP Server.
+/[ax]dsl.*\..*\..*/i            REJECT Your message looks like SPAM 01
+/\.dsl.*\..*\..*/i              REJECT Your message looks like SPAM 02
+/cable.*\..*\..*/i              REJECT Your message looks like SPAM 03
+/client.*\..*\..*/i             REJECT Your message looks like SPAM 04
+/dhcp.*\..*\..*/i               REJECT Your message looks like SPAM 05
+/dial.*\..*\..*/i               REJECT Your message looks like SPAM 06
+/dialup.*\..*\..*/i             REJECT Your message looks like SPAM 07
+/dslam.*\..*\..*/i              REJECT Your message looks like SPAM 08
+/node.*\..*\..*/i               REJECT Your message looks like SPAM 09
+/ppp.*\..*\..*/i                REJECT Your message looks like SPAM 11
+/user.*\..*\..*/i               REJECT Your message looks like SPAM 12
