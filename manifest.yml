@@ -66,7 +66,8 @@ actions:
             sed -i "s|DOMAIN.TLD|${settings.domaintld}|g" /etc/postfix/vhosts
             sed -i "s|myhostname = mail.DOMAIN.TLD|myhostname = mail.${settings.domaintld}|g" /etc/postfix/main.cf
             postmap /etc/postfix/vhosts
-            echo ${settings.emailssecret} > /etc/dovecot/passwd
+            doveadm pw -p ${globals.emailssecret} -s sha1 | cut -d '}' -f2 > /etc/dovecot/passwd
+            echo ${globals.emailssecret} > /etc/dovecot/pass
             service postfix restart
             service dovecot restart
  
