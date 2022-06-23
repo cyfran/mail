@@ -1,0 +1,78 @@
+jpsType: install
+jpsVersion: '1.4'
+id: MailServer
+name: Mail Server
+homepage: https://www.postfix.org/
+version: 0.0.1
+appVersion: 7.9
+baseUrl: https://raw.githubusercontent.com/cyfran/mail/main/
+
+categories:
+  - apps/collaboration
+
+mixins:
+ - vers.yml
+
+description:
+    text: description.md
+    short: Postfix is an open-source email server.
+logo: bigbluebutton.png
+
+requiredFeatures: extip
+ssl: false
+skipNodeEmails: true
+
+globals:
+  emailssecret: ${fn.password}
+
+nodes:
+  nodeType: docker
+  image: jelastic/centosvps:${globals.app_version}
+  nodeGroup: cp
+  fixedCloudlets: 1
+  flexibleCloudlets: 5
+  diskLimit: 10
+  extip: true
+  extipv6: true
+  displayName: Email Server
+  
+settings:
+    domain: 
+        fields: 
+          - name: displayfield
+            type: displayfield
+            hideLabel: false
+            markup: Make sure the the new domain is bound already to the environment via CNAME or via A Record 
+          - name: domain
+            hideLabel: false
+            caption: Domain
+            type: string
+  
+  onInstall:
+    - install-mail
+    
+actions:
+    install-mail:
+        - cmd[cp]: |-
+            yum install postfix dovecot -y
+            wget -O /etc/postfix/main.cf https://raw.githubusercontent.com/cyfran/mail/main/postfix/main.cf
+            wget -O /etc/dovecot/dovecot.conf https://raw.githubusercontent.com/cyfran/mail/main/dovecot/dovecot.conf
+            service postfix restart
+            service dovecot restart
+ 
+startPage: https://${env.domain}
+success:
+    text:
+    en: |
+        Below you will find your admin panel link, username and password.
+        **Admin panel URL:** [https://${env.domain}/](https://${env.domain}/)   
+        **Public IPv4:** ${nodes.cp.extIPs}
+        **Public IPv6:** ${nodes.cp.extipsv6} 
+        **API Secret:** ```${globals.emailssecret}```
+
+    ru: |
+        Ниже вы найдете ссылку на панель администратора, имя пользователя и пароль.
+        **Admin panel URL:** [https://${env.domain}/](https://${env.domain}/)
+        **Public IPv4:** ${nodes.cp.extIPs}
+        **Public IPv6:** ${nodes.cp.extipsv6}     
+        **API Secret:** ```${globals.emailssecret}```
