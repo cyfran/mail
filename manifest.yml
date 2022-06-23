@@ -70,7 +70,7 @@ actions:
             sed -i "s|DOMAIN.TLD|${settings.domaintld}|g" /etc/postfix/vhosts
             sed -i "s|DOMAIN.TLD|${settings.domaintld}|g" /etc/postfix/virtual
             sed -i "s|DOMAIN.TLD|${settings.domaintld}|g" /etc/postfix/vmailbox
-            sed -i "s|EMAIL|${settings.emailname}|g" /etc/postfix/vmailbox
+            sed -i "s|MAIL|${settings.emailname}|g" /etc/postfix/vmailbox
             sed -i "s|myhostname = mail.DOMAIN.TLD|myhostname = mail.${settings.domaintld}|g" /etc/postfix/main.cf
             sed -i "s|ssl = required|ssl = no|g" /etc/dovecot/conf.d/10-ssl.conf
             postmap /etc/postfix/vhosts /etc/postfix/virtual /etc/postfix/vmailbox /etc/postfix/no_verify_sender /etc/postfix/header_checks
