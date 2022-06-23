@@ -25,7 +25,7 @@ globals:
 nodes:
   nodeType: docker
   image: centos:centos7
-  nodeGroup: docker
+  nodeGroup: cp
   fixedCloudlets: 1
   flexibleCloudlets: 3
   extip: true
@@ -46,16 +46,16 @@ onInstall:
 actions:
 
     get-vars:
-        - cmd[docker]: echo ${settings.emailaddress} | awk -F '@' '{print $1}'
+        - cmd[cp]: echo ${settings.emailaddress} | awk -F '@' '{print $1}'
         - setGlobals:
             emailname: ${response.out}
         
-        - cmd[docker]: echo ${settings.emailaddress} | awk -F '@' '{print $2}' 
+        - cmd[cp]: echo ${settings.emailaddress} | awk -F '@' '{print $2}' 
         - setGlobals:
             domaintld: ${response.out}
 
     install-mail:
-        - cmd[docker]: |-
+        - cmd[cp]: |-
             groupadd vmail -g5000
             useradd vmail -u 5000 -g 5000 -m -s /sbin/nologin
             yum install postfix dovecot -y
