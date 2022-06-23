@@ -24,13 +24,10 @@ globals:
 
 nodes:
   nodeType: docker
-  image: jelastic/centosvps:${globals.app_version}
+  image: centos:centos7
   nodeGroup: cp
-  fixedCloudlets: 1
-  flexibleCloudlets: 5
-  diskLimit: 10
+  cloudlets: 16
   extip: true
-  extipv6: true
   displayName: Email Server
   
 settings:    
