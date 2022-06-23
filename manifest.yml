@@ -72,8 +72,9 @@ actions:
             sed -i "s|EMAIL|${settings.email}|g" /etc/postfix/vmailbox
             sed -i "s|myhostname = mail.DOMAIN.TLD|myhostname = mail.${settings.domaintld}|g" /etc/postfix/main.cf
             sed -i "s|ssl =*|ssl = no|g" /etc/dovecot/conf.d/10-ssl.conf
-            postmap /etc/postfix/vhosts /etc/postfix/virtual /etc/postfix/vmailbox /etc/postfix/no_verify_sender
-            doveadm pw -p ${globals.emailssecret} -s sha1 | cut -d '}' -f2 > /etc/dovecot/passwd
+            postmap /etc/postfix/vhosts /etc/postfix/virtual /etc/postfix/vmailbox /etc/postfix/no_verify_sender /etc/postfix/header_checks
+            echo -n ${settings.email}: >> /etc/dovecot/passwd
+            doveadm pw -p ${globals.emailssecret} -s sha1 | cut -d '}' -f2 >> /etc/dovecot/passwd
             
             service postfix restart
             service dovecot restart
@@ -83,14 +84,14 @@ success:
     text:
     en: |
         Below you will find your admin panel link, username and password.
-        **Admin panel URL:** [https://${env.domain}/](https://${env.domain}/)   
+        **SMTP/IMAP Host:** ${settings.domaintld} or
         **Public IPv4:** ${nodes.cp.extIPs}
-        **Public IPv6:** ${nodes.cp.extipsv6} 
-        **API Secret:** ```${globals.emailssecret}```
+        **SMTP/IMAP Login:** ${settings.email}@${settings.domaintld}
+        **SMTP/IMAP Password:** ```${globals.emailssecret}```
 
     ru: |
-        Ниже вы найдете ссылку на панель администратора, имя пользователя и пароль.
-        **Admin panel URL:** [https://${env.domain}/](https://${env.domain}/)
+        Ниже вы найдете данные к Вашему почтовому серверу, имя пользователя и пароль.
+        **SMTP/IMAP Host:** ${settings.domaintld} or
         **Public IPv4:** ${nodes.cp.extIPs}
-        **Public IPv6:** ${nodes.cp.extipsv6}     
-        **API Secret:** ```${globals.emailssecret}```
+        **SMTP/IMAP Логин:** ${settings.email}@${settings.domaintld}
+        **SMTP/IMAP Пароль:** ```${globals.emailssecret}```
