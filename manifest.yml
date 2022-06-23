@@ -87,12 +87,16 @@ success:
         Below you will find your admin panel link, username and password.
         **SMTP/IMAP Host:** ${settings.domaintld} or
         **Public IPv4:** ${nodes.cp.extIPs}
+        
         **SMTP/IMAP Login:** ${settings.emailname}@${settings.domaintld}
+        
         **SMTP/IMAP Password:** ```${globals.emailssecret}```
 
     ru: |
         Ниже вы найдете данные к Вашему почтовому серверу, имя пользователя и пароль.
-        **SMTP/IMAP Host:** ${settings.domaintld} or
+        **SMTP/IMAP Host:** ${settings.domaintld} или
         **Public IPv4:** ${nodes.cp.extIPs}
+        
         **SMTP/IMAP Логин:** ${settings.emailname}@${settings.domaintld}
+        
         **SMTP/IMAP Пароль:** ```${globals.emailssecret}```
