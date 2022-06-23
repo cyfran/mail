@@ -13,7 +13,7 @@ categories:
 description:
     text: description.md
     short: Postfix is an open-source email server.
-logo: bigbluebutton.png
+logo: email.png
 
 requiredFeatures: extip
 ssl: false
@@ -32,23 +32,14 @@ nodes:
   
 settings:    
   domain: 
-          fields: 
-          - name: displayfield
-            type: displayfield
-            hideLabel: true
-            markup: Make sure the the new domain is bound already to the environment via CNAME or via A Record 
-          - name: domain
-            hideLabel: true
-            caption: Domain
-            type: string
   fields:
           - type: string
             name: domaintld
-            caption: Domain Name
+            caption: Enter a domain name
             value: domain.tld
           - type: string
             name: email
-            caption: Email
+            caption: Enter first email address
             value: address@
         
 onInstall:
@@ -60,14 +51,30 @@ actions:
             groupadd vmail -g5000
             useradd vmail -u 5000 -g 5000 -m -s /sbin/nologin
             yum install postfix dovecot -y
+            mkdir /etc/postfix/config
             wget -O /etc/postfix/main.cf https://raw.githubusercontent.com/cyfran/mail/main/postfix/main.cf
+            wget -O /etc/postfix/master.cf https://raw.githubusercontent.com/cyfran/mail/main/postfix/master.cf
+            wget -O /etc/postfix/no_verify_sender https://raw.githubusercontent.com/cyfran/mail/main/postfix/no_verify_sender
+            wget -O /etc/postfix/virtual https://raw.githubusercontent.com/cyfran/mail/main/postfix/virtual
+            wget -O /etc/postfix/vmailbox https://raw.githubusercontent.com/cyfran/mail/main/postfix/vmailbox
+            wget -O /etc/postfix/config/black_client https://raw.githubusercontent.com/cyfran/mail/main/postfix/config/black_client
+            wget -O /etc/postfix/config/black_client_ip https://raw.githubusercontent.com/cyfran/mail/main/postfix/config/black_client_ip
+            wget -O /etc/postfix/config/block_dsl https://raw.githubusercontent.com/cyfran/mail/main/postfix/config/block_dsl
+            wget -O /etc/postfix/config/helo_checks https://raw.githubusercontent.com/cyfran/mail/main/postfix/config/helo_checks
+            wget -O /etc/postfix/config/mx_access https://raw.githubusercontent.com/cyfran/mail/main/postfix/config/mx_access
+            wget -O /etc/postfix/config/white_client https://raw.githubusercontent.com/cyfran/mail/main/postfix/config/white_client
+            wget -O /etc/postfix/config/white_client_ip https://raw.githubusercontent.com/cyfran/mail/main/postfix/config/white_client_ip
             wget -O /etc/dovecot/dovecot.conf https://raw.githubusercontent.com/cyfran/mail/main/dovecot/dovecot.conf
             wget -O /etc/postfix/vhosts https://raw.githubusercontent.com/cyfran/mail/main/postfix/vhosts
             sed -i "s|DOMAIN.TLD|${settings.domaintld}|g" /etc/postfix/vhosts
+            sed -i "s|DOMAIN.TLD|${settings.domaintld}|g" /etc/postfix/virtual
+            sed -i "s|DOMAIN.TLD|${settings.domaintld}|g" /etc/postfix/vmailbox
+            sed -i "s|EMAIL|${settings.email}|g" /etc/postfix/vmailbox
             sed -i "s|myhostname = mail.DOMAIN.TLD|myhostname = mail.${settings.domaintld}|g" /etc/postfix/main.cf
-            postmap /etc/postfix/vhosts
+            sed -i "s|ssl =*|ssl = no|g" /etc/dovecot/conf.d/10-ssl.conf
+            postmap /etc/postfix/vhosts /etc/postfix/virtual /etc/postfix/vmailbox /etc/postfix/no_verify_sender
             doveadm pw -p ${globals.emailssecret} -s sha1 | cut -d '}' -f2 > /etc/dovecot/passwd
-            echo ${globals.emailssecret} > /etc/dovecot/pass
+            
             service postfix restart
             service dovecot restart
  
