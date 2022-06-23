@@ -1,0 +1,2 @@
+# Receive all letters from mail.com mailboxes
+# /^.*\@mail\.com$/      PERMIT
