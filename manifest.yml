@@ -57,11 +57,13 @@ onInstall:
 actions:
     install-mail:
         - cmd[cp]: |-
+            groupadd vmail -g5000
+            useradd vmail -u 5000 -g 5000 -m -s /sbin/nologin
             yum install postfix dovecot -y
             wget -O /etc/postfix/main.cf https://raw.githubusercontent.com/cyfran/mail/main/postfix/main.cf
             wget -O /etc/dovecot/dovecot.conf https://raw.githubusercontent.com/cyfran/mail/main/dovecot/dovecot.conf
             wget -O /etc/postfix/vhosts https://raw.githubusercontent.com/cyfran/mail/main/postfix/vhosts
-            sed -i "s|DOMAIN.TLD|${settings.domaintld}|g" /etc/postfix/main.cf
+            sed -i "s|DOMAIN.TLD|${settings.domaintld}|g" /etc/postfix/vhosts
             sed -i "s|myhostname = mail.DOMAIN.TLD|myhostname = mail.${settings.domaintld}|g" /etc/postfix/main.cf
             postmap /etc/postfix/vhosts
             echo ${settings.emailssecret} > /etc/dovecot/passwd
