@@ -26,7 +26,8 @@ nodes:
   nodeType: docker
   image: centos:centos7
   nodeGroup: cp
-  cloudlets: 16
+  fixedCloudlets: 1
+  flexibleCloudlets: 3
   extip: true
   displayName: Email Server
   
