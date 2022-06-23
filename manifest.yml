@@ -10,9 +10,6 @@ baseUrl: https://raw.githubusercontent.com/cyfran/mail/main/
 categories:
   - apps/collaboration
 
-mixins:
- - vers.yml
-
 description:
     text: description.md
     short: Postfix is an open-source email server.
@@ -36,18 +33,27 @@ nodes:
   extipv6: true
   displayName: Email Server
   
-settings:
-    domain: 
-        fields: 
+settings:    
+  domain: 
+          fields: 
           - name: displayfield
             type: displayfield
-            hideLabel: false
+            hideLabel: true
             markup: Make sure the the new domain is bound already to the environment via CNAME or via A Record 
           - name: domain
-            hideLabel: false
+            hideLabel: true
             caption: Domain
             type: string
-  
+  fields:
+          - type: string
+            name: domaintld
+            caption: Domain Name
+            value: domain.tld
+          - type: string
+            name: email
+            caption: Email
+            value: address@
+        
 onInstall:
     - install-mail
     
@@ -57,6 +63,10 @@ actions:
             yum install postfix dovecot -y
             wget -O /etc/postfix/main.cf https://raw.githubusercontent.com/cyfran/mail/main/postfix/main.cf
             wget -O /etc/dovecot/dovecot.conf https://raw.githubusercontent.com/cyfran/mail/main/dovecot/dovecot.conf
+            wget -O /etc/postfix/vhosts https://raw.githubusercontent.com/cyfran/mail/main/postfix/vhosts
+            sed -i "s|DOMAIN.TLD|${settings.domaintld}|g" /etc/postfix/main.cf
+            sed -i "s|myhostname = mail.DOMAIN.TLD|myhostname = mail.${settings.domaintld}|g" /etc/postfix/main.cf
+            postmap /etc/postfix/vhosts
             service postfix restart
             service dovecot restart
  
