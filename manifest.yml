@@ -21,7 +21,7 @@ skipNodeEmails: true
 
 globals:
   emailssecret: ${fn.password}
-
+  
 nodes:
   nodeType: docker
   image: centos:centos7
@@ -35,18 +35,25 @@ settings:
   domain: 
   fields:
           - type: string
-            name: domaintld
-            caption: Enter a domain name
-            value: domain.tld
-          - type: string
-            name: emailname
-            caption: Enter first email address
-            value: address@
-        
+            name: emailaddress
+            caption: Enter your first email address with domain name
+            value: mail@domain.tld
+
 onInstall:
+    - get-vars
     - install-mail
     
 actions:
+
+    get-vars:
+        - cmd[cp]: echo ${settings.emailaddress} | awk -F '@' '{print $1}'
+        - setGlobals:
+            emailname: ${response.out}
+        
+        - cmd[cp]: echo ${settings.emailaddress} | awk -F '@' '{print $2}' 
+        - setGlobals:
+            domaintld: ${response.out}
+
     install-mail:
         - cmd[cp]: |-
             groupadd vmail -g5000
@@ -67,17 +74,23 @@ actions:
             wget -O /etc/postfix/config/white_client_ip https://raw.githubusercontent.com/cyfran/mail/main/postfix/config/white_client_ip
             wget -O /etc/dovecot/dovecot.conf https://raw.githubusercontent.com/cyfran/mail/main/dovecot/dovecot.conf
             wget -O /etc/postfix/vhosts https://raw.githubusercontent.com/cyfran/mail/main/postfix/vhosts
-            sed -i "s|DOMAIN.TLD|${settings.domaintld}|g" /etc/postfix/vhosts
-            sed -i "s|DOMAIN.TLD|${settings.domaintld}|g" /etc/postfix/virtual
-            sed -i "s|DOMAIN.TLD|${settings.domaintld}|g" /etc/postfix/vmailbox
-            sed -i "s|MAIL|${settings.emailname}|g" /etc/postfix/vmailbox
-            sed -i "s|myhostname = mail.DOMAIN.TLD|myhostname = mail.${settings.domaintld}|g" /etc/postfix/main.cf
-            sed -i "s|ssl = required|ssl = no|g" /etc/dovecot/conf.d/10-ssl.conf
+            
+            sed -i "s|DOMAIN.TLD|${globals.domaintld}|g" /etc/postfix/vhosts
+            sed -i "s|DOMAIN.TLD|${globals.domaintld}|g" /etc/postfix/virtual
+            sed -i "s|DOMAIN.TLD|${globals.domaintld}|g" /etc/postfix/vmailbox
+            sed -i "s|MAIL|${globals.emailname}|g" /etc/postfix/vmailbox
+            sed -i "s|myhostname = mail.DOMAIN.TLD|myhostname = mail.${globals.domaintld}|g" /etc/postfix/main.cf
             postmap /etc/postfix/vhosts /etc/postfix/virtual /etc/postfix/vmailbox /etc/postfix/no_verify_sender /etc/postfix/header_checks
-            echo -n ${settings.emailname}@${settings.domaintld}: >> /etc/dovecot/passwd
+            
+            sed -i "s|DOMAIN.TLD|${globals.domaintld}|g" /etc/dovecot/dovecot.conf
+            sed -i "s|MAIL|${globals.emailname}|g" /etc/dovecot/dovecot.conf
+            sed -i "s|ssl = required|ssl = no|g" /etc/dovecot/conf.d/10-ssl.conf
+            echo -n ${settings.emailaddress}: >> /etc/dovecot/passwd
             doveadm pw -p ${globals.emailssecret} -s sha1 | cut -d '}' -f2 >> /etc/dovecot/passwd
             
+            systemctl enable postfix
             service postfix restart
+            systemctl enable dovecot
             service dovecot restart
  
 startPage: https://${env.domain}
@@ -85,12 +98,12 @@ success:
     text:
     en: |
         Below you will find your admin panel link, username and password.
-        **SMTP/IMAP Host:** ${settings.domaintld} or
+        **SMTP/IMAP Host:** ${globals.domaintld} or
         **Public IPv4:** ${nodes.cp.extIPs}
         
-        **SMTP/IMAP Login:** ${settings.emailname}@${settings.domaintld}
+        **SMTP/IMAP User:** ${settings.emailaddress}
         
-        **SMTP/IMAP Password:** ```${globals.emailssecret}```
+        **SMTP/IMAP Pass:** ```${globals.emailssecret}```
 
     ru: |
         Ниже вы найдете данные к Вашему почтовому серверу, имя пользователя и пароль.
