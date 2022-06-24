@@ -30,10 +30,9 @@ nodes:
   flexibleCloudlets: 3
   extip: true
   displayName: Email Server
-  addons: change-password
+  addons: email-settings
   
 settings:    
-  domain: 
   fields:
           - type: string
             name: emailaddress
@@ -95,26 +94,69 @@ actions:
             service dovecot restart
             
 addons:
-  - id: change-password
-    name: Change Password
-    description: You can change password for email here. 
+  - id: email-settings
+    name: Email Settings
+    description: You can change settings for email here. 
     permanent: true
-    buttons:    
-      - confirmText: Are you sure you want to proceed?
-        loadingText: Changing password...
-        action: changepassword
-        caption: Change
-        successText: The password has been updated successfully!
-        settings: emailaddress
-        title: Please write email for change password. 
-        
+    
+    menu:
+    - confirmText: You are going to add a new domain. Continue?
+      settings: addDomain
+      loadingText: Performing new domain addition...
+      caption: Add new domain
+      action: addDomain
+      successText: Domain was added.
+    - confirmText: You are going to remove domain with all emails address and data. Continue?
+      settings: removeDomain
+      loadingText: Performing removing domain...
+      caption: Remove domain
+      action: removeDomain
+      successText: Domain was removed.
+    - confirmText: You are going to change password for email address. Continue?
+      settings: changePassword
+      loadingText: Changing password...
+      caption: Change password
+      action: changePassword
+      successText: Password was changed.
+    
+    settings:
+      addDomain:
+        fields:
+        - name: newdomaintld
+          caption: 'Domain Name:'
+          type: string
+          required: true
+      removeDomain:
+        fields:
+        - name: removedomaintld
+          caption: 'Domain Name:'
+          type: string
+          required: true
+      changePassword:
+        fields:
+        - name: emailaddress
+          caption: 'Email address:'
+          type: string
+          required: true
+   
     globals:
       emailssecret: ${fn.password}
         
     actions:
-      changepassword:
+      addDomain:
         - cmd[cp]: |-
-            sed -i "s|${settings.emailaddress}:.*|${settings.emailaddress}:`doveadm pw -p ${globals.emailssecret} -s sha1 | cut -d '}' -f2`|g" /etc/dovecot/passwd
+            echo ${settings.newdomaintld} >> /etc/postfix/vhosts
+            postmap /etc/postfix/vhosts
+            systemctl reload postfix
+      removeDomain:
+        - cmd[cp]: |-
+            sed -i s|${settings.removedomaintld}||g /etc/postfix/vhosts
+            postmap /etc/postfix/vhosts
+            systemctl reload postfix
+      changePassword:
+        - cmd[cp]: |-      
+            sed -i s|${settings.emailaddress}:.*|${settings.emailaddress}:`doveadm pw -p ${globals.emailssecret} -s sha1 | cut -d '}' -f2`|g /etc/dovecot/passwd
+            systemctl reload dovecot
 
 startPage: https://${env.domain}
 success:
