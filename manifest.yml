@@ -30,6 +30,7 @@ nodes:
   flexibleCloudlets: 3
   extip: true
   displayName: Email Server
+  addons: change-password
   
 settings:    
   domain: 
@@ -92,7 +93,29 @@ actions:
             service postfix restart
             systemctl enable dovecot
             service dovecot restart
- 
+            
+addons:
+  - id: change-password
+    name: Change Password
+    description: You can change password for email here. 
+    permanent: true
+    buttons:    
+      - confirmText: Are you sure you want to proceed?
+        loadingText: Changing password...
+        action: changepassword
+        caption: Change
+        successText: The password has been updated successfully!
+        settings: emailaddress
+        title: Please write email for change password. 
+        
+    globals:
+      emailssecret: ${fn.password}
+        
+    actions:
+      changepassword:
+        - cmd[cp]: |-
+            sed -i "s|${settings.emailaddress}:.*|${settings.emailaddress}:`doveadm pw -p ${globals.emailssecret} -s sha1 | cut -d '}' -f2`|g" /etc/dovecot/passwd
+
 startPage: https://${env.domain}
 success:
     text:
