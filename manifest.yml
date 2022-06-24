@@ -101,9 +101,9 @@ success:
         **SMTP/IMAP Host:** ${globals.domaintld} or
         **Public IPv4:** ${nodes.cp.extIPs}
         
-        **SMTP/IMAP Login:** ${settings.emailaddress}
+        **SMTP/IMAP User:** ${settings.emailaddress}
         
-        **SMTP/IMAP Password:** ```${globals.emailssecret}```
+        **SMTP/IMAP Pass:** ```${globals.emailssecret}```
 
     ru: |
         Ниже вы найдете данные к Вашему почтовому серверу, имя пользователя и пароль.
