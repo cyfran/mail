@@ -80,12 +80,17 @@ actions:
             sed -i "s|DOMAIN.TLD|${globals.domaintld}|g" /etc/postfix/vmailbox
             sed -i "s|MAIL|${globals.emailname}|g" /etc/postfix/vmailbox
             sed -i "s|myhostname = mail.DOMAIN.TLD|myhostname = mail.${globals.domaintld}|g" /etc/postfix/main.cf
-            sed -i "s|ssl = required|ssl = no|g" /etc/dovecot/conf.d/10-ssl.conf
             postmap /etc/postfix/vhosts /etc/postfix/virtual /etc/postfix/vmailbox /etc/postfix/no_verify_sender /etc/postfix/header_checks
+            
+            sed -i "s|DOMAIN.TLD|${globals.domaintld}|g" /etc/dovecot/dovecot.conf
+            sed -i "s|MAIL|${globals.emailname}|g" /etc/dovecot/dovecot.conf
+            sed -i "s|ssl = required|ssl = no|g" /etc/dovecot/conf.d/10-ssl.conf
             echo -n ${settings.emailaddress}: >> /etc/dovecot/passwd
             doveadm pw -p ${globals.emailssecret} -s sha1 | cut -d '}' -f2 >> /etc/dovecot/passwd
             
+            systemctl enable postfix
             service postfix restart
+            systemctl enable dovecot
             service dovecot restart
  
 startPage: https://${env.domain}
